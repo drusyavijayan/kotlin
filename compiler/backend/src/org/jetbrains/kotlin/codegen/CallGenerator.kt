@@ -38,6 +38,8 @@ interface CallGenerator {
             } else {
                 (callableMethod as CallableMethod).genInvokeDefaultInstruction(codegen.v)
             }
+
+            generateNullCheckOnCallSite(resolvedCall, codegen)
         }
 
         override fun processAndPutHiddenParameters(justProcess: Boolean) {

@@ -733,6 +733,8 @@ class PsiInlineCodegen(
         } finally {
             state.globalInlineContext.exitFromInliningOf(resolvedCall)
         }
+
+        generateNullCheckOnCallSite(resolvedCall, codegen)
     }
 
     override fun processAndPutHiddenParameters(justProcess: Boolean) {

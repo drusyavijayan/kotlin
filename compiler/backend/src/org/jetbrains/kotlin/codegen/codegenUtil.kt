@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.codegen.coroutines.continuationAsmType
 import org.jetbrains.kotlin.codegen.coroutines.unwrapInitialDescriptorForSuspendFunction
 import org.jetbrains.kotlin.codegen.inline.NUMBERED_FUNCTION_PREFIX
 import org.jetbrains.kotlin.codegen.inline.ReificationArgument
+import org.jetbrains.kotlin.codegen.intrinsics.IntrinsicMethods
 import org.jetbrains.kotlin.codegen.intrinsics.TypeIntrinsics
 import org.jetbrains.kotlin.codegen.optimization.common.asSequence
 import org.jetbrains.kotlin.codegen.state.GenerationState
@@ -39,6 +40,7 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.jvm.AsmTypes
+import org.jetbrains.kotlin.resolve.jvm.JvmBindingContextSlices
 import org.jetbrains.kotlin.resolve.jvm.JvmClassName
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.Synthetic
@@ -659,4 +661,31 @@ private fun generateLambdaForRunSuspend(
 
     lambdaBuilder.done()
     return lambdaBuilder.thisName
+}
+
+
+
+fun generateNullCheck(v: InstructionAdapter) {
+    val notNullLabel = Label()
+    v.run {
+        dup()
+        ifnonnull(notNullLabel)
+        invokestatic(IntrinsicMethods.INTRINSICS_CLASS_NAME, "throwNpe", "()V", false)
+        mark(notNullLabel)
+    }
+}
+
+fun generateNullCheckOnCallSite(resolvedCall: ResolvedCall<*>?, codegen: ExpressionCodegen) {
+    val assertionInfoOnDelegates = codegen.bindingContext.get(
+        JvmBindingContextSlices.RUNTIME_ASSERTION_INFO_ON_DELEGATES,
+        codegen.context.contextDescriptor
+    )
+    val assertionInfoOnGenericCall = codegen.bindingContext.get(
+        JvmBindingContextSlices.RUNTIME_ASSERTION_INFO_ON_GENERIC_CALL,
+        resolvedCall?.call?.callElement ?: return
+    )
+
+    if (assertionInfoOnDelegates?.needNotNullAssertion == true || assertionInfoOnGenericCall?.needNotNullAssertion == true) {
+        generateNullCheck(codegen.v)
+    }
 }
