@@ -10,10 +10,6 @@ fun <T> bar() {
 }
 
 fun box(): String {
-    try {
-        bar<String?>()
-    } catch (e: KotlinNullPointerException) {
-        return "Fail: KotlinNullPointerException should not have been thrown"
-    }
+    bar<String?>()
     return "OK"
 }

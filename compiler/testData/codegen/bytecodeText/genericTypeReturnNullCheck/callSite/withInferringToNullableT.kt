@@ -1,14 +1,11 @@
 // !LANGUAGE: +GenerateNullChecksForGenericTypeReturningFunctions
 // TARGET_BACKEND: JVM
-// IGNORE_BACKEND: JVM_IR
-// WITH_RUNTIME
 
 fun <T> foo(): T = null as T
-fun <T> test() {
+
+fun <T> main() {
     val x: T? = foo()
 }
 
-fun box(): String {
-    test<String>()
-    return "OK"
-}
+// 0 IFNONNULL
+// 0 INVOKESTATIC kotlin/jvm/internal/Intrinsics.throwNpe

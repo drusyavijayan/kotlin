@@ -1,7 +1,5 @@
 // !LANGUAGE: +GenerateNullChecksForGenericTypeReturningFunctions
 // TARGET_BACKEND: JVM
-// IGNORE_BACKEND: JVM_IR
-// WITH_RUNTIME
 
 // FILE: J.java
 public class J<T> {
@@ -16,7 +14,5 @@ fun test() {
     y = foo()
 }
 
-fun box(): String {
-    test()
-    return "OK"
-}
+// 0 IFNONNULL
+// 0 INVOKESTATIC kotlin/jvm/internal/Intrinsics.throwNpe

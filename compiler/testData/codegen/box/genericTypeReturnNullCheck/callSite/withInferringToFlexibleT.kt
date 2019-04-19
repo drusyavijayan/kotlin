@@ -17,10 +17,6 @@ fun <T> test() {
 }
 
 fun box(): String {
-    try {
-        test<String>()
-    } catch (e: KotlinNullPointerException) {
-        return "Fail: KotlinNullPointerException should not have been thrown"
-    }
+    test<String>()
     return "OK"
 }

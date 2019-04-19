@@ -8,10 +8,6 @@ val x: String by map
 val y: String? by map
 
 fun box(): String {
-    try {
-        y
-    } catch (e: KotlinNullPointerException) {
-        return "Fail: KotlinNullPointerException should not have been thrown"
-    }
+    y
     return "OK"
 }

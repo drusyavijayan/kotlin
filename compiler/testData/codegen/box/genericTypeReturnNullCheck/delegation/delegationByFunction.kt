@@ -1,10 +1,9 @@
 // !LANGUAGE: +GenerateNullChecksForGenericTypeReturningFunctions
 // TARGET_BACKEND: JVM
-// IGNORE_BACKEND: JVM_IR
 // WITH_RUNTIME
 
-val <T> T.map get() = mapOf<String, T?>("x" to null)
-val x: String by "".map
+fun map(): Map<String, String?> = mapOf("x" to null)
+val x: String by map()
 
 fun box(): String {
     try {

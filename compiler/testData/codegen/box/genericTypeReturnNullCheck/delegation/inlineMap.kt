@@ -11,5 +11,5 @@ fun box(): String {
     } catch (e: KotlinNullPointerException) {
         return "OK"
     }
-    return "Fail: KotlinNullPointerException should not have been thrown"
+    return "Fail: KotlinNullPointerException should have been thrown"
 }
