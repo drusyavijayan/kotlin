@@ -188,6 +188,10 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
 
         override val session: FirSession
             get() = this@FirBodyResolveTransformer.session
+
+        override fun KotlinTypeMarker.removeExactAnnotation(): KotlinTypeMarker {
+            return this
+        }
     }, session)
 
     private fun <T : FirQualifiedAccess> transformCallee(qualifiedAccess: T): T {
