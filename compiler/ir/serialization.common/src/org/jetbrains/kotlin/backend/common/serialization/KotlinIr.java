@@ -19526,6 +19526,15 @@ public final class KotlinIr {
      * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 4;</code>
      */
     org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol getSymbol();
+
+    /**
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+     */
+    boolean hasOrigin();
+    /**
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+     */
+    org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin getOrigin();
   }
   /**
    * Protobuf type {@code org.jetbrains.kotlin.backend.common.serialization.IrLocalDelegatedPropertyReference}
@@ -19629,6 +19638,19 @@ public final class KotlinIr {
               bitField0_ |= 0x00000008;
               break;
             }
+            case 42: {
+              org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = origin_.toBuilder();
+              }
+              origin_ = input.readMessage(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(origin_);
+                origin_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000010;
+              break;
+            }
           }
         }
       } catch (org.jetbrains.kotlin.protobuf.InvalidProtocolBufferException e) {
@@ -19723,11 +19745,27 @@ public final class KotlinIr {
       return symbol_;
     }
 
+    public static final int ORIGIN_FIELD_NUMBER = 5;
+    private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin origin_;
+    /**
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+     */
+    public boolean hasOrigin() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+     */
+    public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin getOrigin() {
+      return origin_;
+    }
+
     private void initFields() {
       delegate_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
       getter_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
       setter_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
       symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
+      origin_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -19740,6 +19778,10 @@ public final class KotlinIr {
         return false;
       }
       if (!hasSymbol()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasOrigin()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -19763,6 +19805,10 @@ public final class KotlinIr {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!getOrigin().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -19781,6 +19827,9 @@ public final class KotlinIr {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, symbol_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, origin_);
       }
       output.writeRawBytes(unknownFields);
     }
@@ -19806,6 +19855,10 @@ public final class KotlinIr {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += org.jetbrains.kotlin.protobuf.CodedOutputStream
           .computeMessageSize(4, symbol_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += org.jetbrains.kotlin.protobuf.CodedOutputStream
+          .computeMessageSize(5, origin_);
       }
       size += unknownFields.size();
       memoizedSerializedSize = size;
@@ -19909,6 +19962,8 @@ public final class KotlinIr {
         bitField0_ = (bitField0_ & ~0x00000004);
         symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
         bitField0_ = (bitField0_ & ~0x00000008);
+        origin_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -19948,6 +20003,10 @@ public final class KotlinIr {
           to_bitField0_ |= 0x00000008;
         }
         result.symbol_ = symbol_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.origin_ = origin_;
         result.bitField0_ = to_bitField0_;
         return result;
       }
@@ -19966,6 +20025,9 @@ public final class KotlinIr {
         if (other.hasSymbol()) {
           mergeSymbol(other.getSymbol());
         }
+        if (other.hasOrigin()) {
+          mergeOrigin(other.getOrigin());
+        }
         setUnknownFields(
             getUnknownFields().concat(other.unknownFields));
         return this;
@@ -19977,6 +20039,10 @@ public final class KotlinIr {
           return false;
         }
         if (!hasSymbol()) {
+          
+          return false;
+        }
+        if (!hasOrigin()) {
           
           return false;
         }
@@ -19997,6 +20063,10 @@ public final class KotlinIr {
           }
         }
         if (!getSymbol().isInitialized()) {
+          
+          return false;
+        }
+        if (!getOrigin().isInitialized()) {
           
           return false;
         }
@@ -20259,6 +20329,66 @@ public final class KotlinIr {
         symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
 
         bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin origin_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.getDefaultInstance();
+      /**
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+       */
+      public boolean hasOrigin() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+       */
+      public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin getOrigin() {
+        return origin_;
+      }
+      /**
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+       */
+      public Builder setOrigin(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        origin_ = value;
+
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+       */
+      public Builder setOrigin(
+          org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.Builder builderForValue) {
+        origin_ = builderForValue.build();
+
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+       */
+      public Builder mergeOrigin(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin value) {
+        if (((bitField0_ & 0x00000010) == 0x00000010) &&
+            origin_ != org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.getDefaultInstance()) {
+          origin_ =
+            org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.newBuilder(origin_).mergeFrom(value).buildPartial();
+        } else {
+          origin_ = value;
+        }
+
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrStatementOrigin origin = 5;</code>
+       */
+      public Builder clearOrigin() {
+        origin_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
