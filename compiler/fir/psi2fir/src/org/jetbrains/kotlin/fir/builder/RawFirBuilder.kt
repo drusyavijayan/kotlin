@@ -30,7 +30,6 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.hasActualModifier
 import org.jetbrains.kotlin.psi.psiUtil.hasExpectModifier
-import org.jetbrains.kotlin.psi.psiUtil.isObjectLiteral
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -360,12 +359,12 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             // TODO: in case we have no primary constructor,
             // it may be not possible to determine delegated super type right here
             delegatedSuperTypeRef = delegatedSuperTypeRef ?: defaultDelegatedSuperTypeRef
-            if (!this.hasPrimaryConstructor() || this.isObjectLiteral()) return delegatedSuperTypeRef
+            if (!this.hasPrimaryConstructor()) return delegatedSuperTypeRef
 
             val firPrimaryConstructor = primaryConstructor.toFirConstructor(
                 superTypeCallEntry,
                 delegatedSuperTypeRef,
-                delegatedSelfTypeRef!!,
+                delegatedSelfTypeRef ?: delegatedSuperTypeRef,
                 owner = this
             )
             container.declarations += firPrimaryConstructor
