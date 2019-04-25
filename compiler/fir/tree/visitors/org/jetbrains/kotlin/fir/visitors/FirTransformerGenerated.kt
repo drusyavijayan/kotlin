@@ -368,10 +368,7 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformResolvedTypeRef(errorTypeRef, data)
     }
 
-    open fun transformResolvedFunctionTypeRef(
-        resolvedFunctionTypeRef: FirResolvedFunctionTypeRef,
-        data: D
-    ): CompositeTransformResult<FirTypeRef> {
+    open fun transformResolvedFunctionTypeRef(resolvedFunctionTypeRef: FirResolvedFunctionTypeRef, data: D): CompositeTransformResult<FirTypeRef> {
         return transformResolvedTypeRef(resolvedFunctionTypeRef, data)
     }
 
