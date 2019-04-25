@@ -19,8 +19,7 @@ import org.jetbrains.kotlin.fir.labels.FirLabelImpl
 import org.jetbrains.kotlin.fir.references.*
 import org.jetbrains.kotlin.fir.symbols.CallableId
 import org.jetbrains.kotlin.fir.symbols.impl.*
-import org.jetbrains.kotlin.fir.types.FirTypeRef
-import org.jetbrains.kotlin.fir.types.FirTypeProjection
+import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.types.impl.*
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.lexer.KtTokens.*
@@ -409,7 +408,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                 firDelegatedCall
             )
             this?.extractAnnotationsTo(firConstructor)
-            owner.extractTypeParametersTo(firConstructor)
+            firConstructor.typeParameters += typeParametersFromSelfType(delegatedSelfTypeRef)
             this?.extractValueParametersTo(firConstructor)
             return firConstructor
         }
@@ -438,16 +437,19 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         }
 
         private fun KtClassOrObject.toDelegatedSelfType(firClass: FirRegularClass): FirTypeRef {
+            val typeParameters = firClass.typeParameters.map {
+                FirTypeParameterImpl(session, it.psi, FirTypeParameterSymbol(), it.name, Variance.INVARIANT, false).apply {
+                    this.bounds += it.bounds
+                }
+            }
             return FirResolvedTypeRefImpl(
                 session,
                 this,
                 ConeClassTypeImpl(
                     firClass.symbol.toLookupTag(),
-                    firClass.typeParameters.map { ConeTypeParameterTypeImpl(it.symbol, false) }.toTypedArray(),
+                    typeParameters.map { ConeTypeParameterTypeImpl(it.symbol, false) }.toTypedArray(),
                     false
-                ),
-                isMarkedNullable = false,
-                annotations = emptyList()
+                )
             )
         }
 
@@ -753,11 +755,17 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             )
             firFunctions += firConstructor
             extractAnnotationsTo(firConstructor)
-            owner.extractTypeParametersTo(firConstructor)
+            firConstructor.typeParameters += typeParametersFromSelfType(delegatedSelfTypeRef)
             extractValueParametersTo(firConstructor)
             firConstructor.body = buildFirBody()
             firFunctions.removeLast()
             return firConstructor
+        }
+
+        private fun typeParametersFromSelfType(delegatedSelfTypeRef: FirTypeRef): List<FirTypeParameter> {
+            return delegatedSelfTypeRef.coneTypeUnsafe()
+                .typeArguments
+                .map { ((it as ConeTypeParameterType).lookupTag as FirTypeParameterSymbol).fir }
         }
 
         private fun KtConstructorDelegationCall.convert(
