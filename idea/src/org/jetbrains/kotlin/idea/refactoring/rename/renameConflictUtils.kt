@@ -48,10 +48,12 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.DelegatingBindingTrace
 import org.jetbrains.kotlin.resolve.OverloadChecker
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
+import org.jetbrains.kotlin.resolve.calls.components.ClassicTypeSystemContextForCS
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.kotlin.resolve.calls.resolvedCallUtil.getExplicitReceiverValue
 import org.jetbrains.kotlin.resolve.calls.resolvedCallUtil.getImplicitReceiverValue
 import org.jetbrains.kotlin.resolve.calls.results.TypeSpecificityComparator
+import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.descriptorUtil.getImportableDescriptor
 import org.jetbrains.kotlin.resolve.jvm.JvmTypeSpecificityComparator
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
@@ -161,14 +163,15 @@ internal fun checkRedeclarations(
         }
     }
 
+    val typeSystemContext = ClassicTypeSystemContextForCS(descriptor.builtIns)
     val overloadChecker = when (descriptor) {
         is PropertyDescriptor,
         is FunctionDescriptor,
         is ClassifierDescriptor -> {
             val psi = (descriptor as? DeclarationDescriptorWithSource)?.source?.getPsi() as? KtElement ?: return
             val typeSpecificityComparator = when (TargetPlatformDetector.getPlatform(psi.containingKtFile)) {
-                is JvmPlatform -> JvmTypeSpecificityComparator
-                is JsPlatform -> JsTypeSpecificityComparator
+                is JvmPlatform -> JvmTypeSpecificityComparator(typeSystemContext)
+                is JsPlatform -> JsTypeSpecificityComparator(typeSystemContext)
                 else -> TypeSpecificityComparator.NONE
             }
             OverloadChecker(typeSpecificityComparator)
