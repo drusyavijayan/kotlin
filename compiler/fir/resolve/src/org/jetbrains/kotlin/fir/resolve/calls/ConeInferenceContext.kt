@@ -195,11 +195,11 @@ interface ConeInferenceContext : TypeSystemInferenceExtensionContext,
     }
 
     override fun KotlinTypeMarker.makeDefinitelyNotNullOrNotNull(): KotlinTypeMarker {
-        return this //TODO("not implemented")
+        return this.withNullability(false) //TODO("not implemented")
     }
 
     override fun SimpleTypeMarker.makeSimpleTypeDefinitelyNotNullOrNotNull(): SimpleTypeMarker {
-        return this //TODO("not implemented")
+        return this.withNullability(false) //TODO("not implemented")
     }
 
     override fun createCapturedType(
