@@ -256,7 +256,7 @@ class JavaSymbolProvider(
     private fun hasTopLevelClassOf(classId: ClassId): Boolean {
         val knownNames = knownClassNamesInPackage.getOrPut(classId.packageFqName) {
             facade.knownClassNamesInPackage(classId.packageFqName)
-        } ?: return false
+        } ?: return true
         return classId.relativeClassName.topLevelName() in knownNames
     }
 }
