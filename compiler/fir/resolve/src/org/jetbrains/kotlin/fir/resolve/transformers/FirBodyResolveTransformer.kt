@@ -196,7 +196,11 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                     val firUnsafe = symbol.firUnsafe()
                     // TODO: unhack
                     if (firUnsafe is FirEnumEntry) {
-                        firUnsafe.superTypeRefs.first() as FirResolvedTypeRef
+                        (firUnsafe.superTypeRefs.firstOrNull() as? FirResolvedTypeRef) ?: FirErrorTypeRefImpl(
+                            session,
+                            null,
+                            "no enum item supertype"
+                        )
                     } else
                         FirResolvedTypeRefImpl(
                             session, null, symbol.constructType(emptyArray(), isNullable = false),
