@@ -109,7 +109,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             return when (this) {
                 is KtSecondaryConstructor -> toFirConstructor(
                     delegatedSuperType,
-                    delegatedSelfType!!,
+                    delegatedSelfType ?: FirErrorTypeRefImpl(this@RawFirBuilder.session, this, "Constructor in object"),
                     owner,
                     hasPrimaryConstructor
                 )
@@ -762,9 +762,10 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         }
 
         private fun typeParametersFromSelfType(delegatedSelfTypeRef: FirTypeRef): List<FirTypeParameter> {
-            return delegatedSelfTypeRef.coneTypeUnsafe()
-                .typeArguments
-                .map { ((it as ConeTypeParameterType).lookupTag as FirTypeParameterSymbol).fir }
+            return delegatedSelfTypeRef.coneTypeSafe()
+                ?.typeArguments
+                ?.map { ((it as ConeTypeParameterType).lookupTag as FirTypeParameterSymbol).fir }
+                ?: emptyList()
         }
 
         private fun KtConstructorDelegationCall.convert(
