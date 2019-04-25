@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.hasActualModifier
 import org.jetbrains.kotlin.psi.psiUtil.hasExpectModifier
+import org.jetbrains.kotlin.psi.psiUtil.isObjectLiteral
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -105,12 +106,12 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             convert()
 
         private fun KtDeclaration.toFirDeclaration(
-            delegatedSuperType: FirTypeRef?, delegatedSelfType: FirTypeRef, owner: KtClassOrObject, hasPrimaryConstructor: Boolean
+            delegatedSuperType: FirTypeRef?, delegatedSelfType: FirTypeRef?, owner: KtClassOrObject, hasPrimaryConstructor: Boolean
         ): FirDeclaration {
             return when (this) {
                 is KtSecondaryConstructor -> toFirConstructor(
                     delegatedSuperType,
-                    delegatedSelfType,
+                    delegatedSelfType!!,
                     owner,
                     hasPrimaryConstructor
                 )
@@ -322,7 +323,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         }
 
         private fun KtClassOrObject.extractSuperTypeListEntriesTo(
-            container: FirModifiableClass, delegatedSelfTypeRef: FirTypeRef
+            container: FirModifiableClass, delegatedSelfTypeRef: FirTypeRef?
         ): FirTypeRef? {
             var superTypeCallEntry: KtSuperTypeCallEntry? = null
             var delegatedSuperTypeRef: FirTypeRef? = null
@@ -360,12 +361,12 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             // TODO: in case we have no primary constructor,
             // it may be not possible to determine delegated super type right here
             delegatedSuperTypeRef = delegatedSuperTypeRef ?: defaultDelegatedSuperTypeRef
-            if (!this.hasPrimaryConstructor()) return delegatedSuperTypeRef
+            if (!this.hasPrimaryConstructor() || this.isObjectLiteral()) return delegatedSuperTypeRef
 
             val firPrimaryConstructor = primaryConstructor.toFirConstructor(
                 superTypeCallEntry,
                 delegatedSuperTypeRef,
-                delegatedSelfTypeRef,
+                delegatedSelfTypeRef!!,
                 owner = this
             )
             container.declarations += firPrimaryConstructor
@@ -450,12 +451,6 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             )
         }
 
-        @Deprecated("TODO, proper type")
-        private fun KtObjectDeclaration.toDelegatedSelfType(): FirTypeRef {
-            return FirUserTypeRefImpl(session, this, isMarkedNullable = false).apply {
-                qualifier.add(FirQualifierPartImpl(nameAsSafeName))
-            }
-        }
 
 
         override fun visitEnumEntry(enumEntry: KtEnumEntry, data: Unit): FirElement {
@@ -602,12 +597,12 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             val objectDeclaration = expression.objectDeclaration
             return FirAnonymousObjectImpl(session, expression).apply {
                 objectDeclaration.extractAnnotationsTo(this)
-                val delegatedSelfType = objectDeclaration.toDelegatedSelfType()
-                objectDeclaration.extractSuperTypeListEntriesTo(this, delegatedSelfType)
+                objectDeclaration.extractSuperTypeListEntriesTo(this, null)
+                this.typeRef = superTypeRefs.first() // TODO
 
                 for (declaration in objectDeclaration.declarations) {
                     declarations += declaration.toFirDeclaration(
-                        delegatedSuperType = null, delegatedSelfType = delegatedSelfType,
+                        delegatedSuperType = null, delegatedSelfType = null,
                         owner = objectDeclaration, hasPrimaryConstructor = false
                     )
                 }
