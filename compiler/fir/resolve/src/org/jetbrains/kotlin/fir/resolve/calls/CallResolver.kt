@@ -162,7 +162,7 @@ class MemberScopeTowerLevel(
     ): ProcessorAction {
         val scope = dispatchReceiver.type.scope(session, ScopeSession()) ?: return ProcessorAction.NEXT
         if (scope.processScopeMembers { candidate ->
-                if (candidate is ConeCallableSymbol && candidate.hasConsistentExtensionReceiver(explicitExtensionReceiver)) {
+                if (candidate is ConeCallableSymbol/* && candidate.hasConsistentExtensionReceiver(explicitExtensionReceiver)*/) {
                     // NB: we do not check dispatchReceiverValue != null here,
                     // because of objects & constructors (see comments in dispatchReceiverValue() implementation)
                     output.consumeCandidate(candidate, candidate.dispatchReceiverValue())
