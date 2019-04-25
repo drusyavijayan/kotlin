@@ -74,7 +74,8 @@ private fun ConeKotlinType.receiverType(expectedTypeRef: FirTypeRef): ConeKotlin
 
 private fun isFunctionalTypeWithReceiver(typeRef: FirTypeRef) =
     typeRef.annotations.any {
-        it.annotationTypeRef.coneTypeUnsafe<ConeClassType>().lookupTag.classId.asString() == "kotlin/ExtensionFunctionType"
+        val coneTypeSafe = it.annotationTypeRef.coneTypeSafe<ConeClassType>() ?: return@any false
+        coneTypeSafe.lookupTag.classId.asString() == "kotlin/ExtensionFunctionType"
     }
 
 private val ConeKotlinType.returnType: ConeKotlinType
