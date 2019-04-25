@@ -140,7 +140,6 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                     session,
                     null,
                     StandardClassIds.Boolean(symbolProvider).constructType(emptyArray(), isNullable = false),
-                    false,
                     emptyList()
                 )
             }
@@ -201,7 +200,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                     } else
                         FirResolvedTypeRefImpl(
                             session, null, symbol.constructType(emptyArray(), isNullable = false),
-                            isMarkedNullable = false, annotations = emptyList()
+                            annotations = emptyList()
                         )
                 } else {
                     error("WTF ! $symbol")
@@ -269,7 +268,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                 val labelName = callee.labelName
                 val types = if (labelName == null) labels.values() else labels[Name.identifier(labelName)]
                 val type = types.lastOrNull() ?: ConeKotlinErrorType("Unresolved this@$labelName")
-                qualifiedAccessExpression.resultType = FirResolvedTypeRefImpl(session, null, type, false, emptyList())
+                qualifiedAccessExpression.resultType = FirResolvedTypeRefImpl(session, null, type, emptyList())
             }
             is FirSuperReference -> {
                 qualifiedAccessExpression.resultType =
@@ -431,7 +430,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                             session,
                             null,
                             Name.identifier("it"),
-                            FirResolvedTypeRefImpl(session, null, parameters.single(), false, emptyList()),
+                            FirResolvedTypeRefImpl(session, null, parameters.single(), emptyList()),
                             null,
                             false,
                             false,
@@ -561,7 +560,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                 commonSuperType(types.map { it.coneTypeUnsafe() })
             }
         } as ConeKotlinType
-        return FirResolvedTypeRefImpl(session, null, commonSuperType, false, emptyList())
+        return FirResolvedTypeRefImpl(session, null, commonSuperType, emptyList())
     }
 
     override fun transformWhenExpression(whenExpression: FirWhenExpression, data: Any?): CompositeTransformResult<FirStatement> {
@@ -614,7 +613,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
 
             val type = ConeClassTypeImpl(symbol.toLookupTag(), emptyArray(), isNullable = kind == IrConstKind.Null)
 
-            constExpression.resultType = FirResolvedTypeRefImpl(session, null, type, false, emptyList())
+            constExpression.resultType = FirResolvedTypeRefImpl(session, null, type, emptyList())
         } else {
             constExpression.resultType = expectedType
         }
@@ -733,7 +732,6 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                     session,
                     null,
                     kClassSymbol.constructType(arrayOf(transformedGetClassCall.argument.resultType.coneTypeUnsafe()), false),
-                    false,
                     emptyList()
                 )
         return transformedGetClassCall.compose()
