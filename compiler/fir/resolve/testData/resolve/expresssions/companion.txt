@@ -12,6 +12,9 @@ FILE: companion.kt
             public final fun foo(): R|kotlin/Unit| {
             }
 
+            public final val D: R|kotlin/String| = String()
+                public get(): R|kotlin/String|
+
         }
 
         public final fun bar(): R|kotlin/Unit| {
