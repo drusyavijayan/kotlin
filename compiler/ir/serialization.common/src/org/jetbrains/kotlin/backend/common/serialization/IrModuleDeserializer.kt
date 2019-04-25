@@ -426,28 +426,21 @@ abstract class IrModuleDeserializer(
         )
     }
 
-    private val getterToPropertyDescriptorMap = mutableMapOf<IrSimpleFunctionSymbol, WrappedPropertyDescriptor>()
-
     private fun deserializePropertyReference(
         proto: KotlinIr.IrPropertyReference,
         start: Int, end: Int, type: IrType
     ): IrPropertyReference {
+
+        val symbol = deserializeIrSymbol(proto.symbol) as IrPropertySymbol
 
         val field = if (proto.hasField()) deserializeIrSymbol(proto.field) as IrFieldSymbol else null
         val getter = if (proto.hasGetter()) deserializeIrSymbol(proto.getter) as IrSimpleFunctionSymbol else null
         val setter = if (proto.hasSetter()) deserializeIrSymbol(proto.setter) as IrSimpleFunctionSymbol else null
         val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
-        val descriptor =
-        if (proto.hasDescriptorReference())
-            deserializeDescriptorReference(proto.descriptorReference) as PropertyDescriptor
-        else
-            field?.descriptor as? WrappedPropertyDescriptor // If field's descriptor coincides with property's.
-                ?: getterToPropertyDescriptorMap.getOrPut(getter!!) { WrappedPropertyDescriptor() }
-
         val callable = IrPropertyReferenceImpl(
             start, end, type,
-            descriptor,
+            symbol,
             proto.memberAccess.typeArguments.typeArgumentCount,
             field,
             getter,
@@ -1163,44 +1156,56 @@ abstract class IrModuleDeserializer(
         origin: IrDeclarationOrigin
     ): IrProperty {
 
+        val symbol = deserializeIrSymbol(proto.symbol) as IrPropertySymbol
+
         val backingField =
             if (proto.hasBackingField()) deserializeIrField(proto.backingField, start, end, origin) else null
         val getter = if (proto.hasGetter()) deserializeIrFunction(proto.getter, start, end, origin) else null
         val setter = if (proto.hasSetter()) deserializeIrFunction(proto.setter, start, end, origin) else null
 
-        backingField?.let { (it.descriptor as? WrappedFieldDescriptor)?.bind(it) }
+        val property =
+            symbolTable.declareProperty(
+                UNDEFINED_OFFSET, UNDEFINED_OFFSET, irrelevantOrigin,
+                symbol.descriptor, proto.isDelegated
+            ) {
+                IrPropertyImpl(
+                    start, end, origin,
+                    symbol,
+                    deserializeName(proto.name),
+                    deserializeVisibility(proto.visibility),
+                    deserializeModality(proto.modality),
+                    proto.isVar,
+                    proto.isConst,
+                    proto.isLateinit,
+                    proto.isDelegated,
+                    proto.isExternal
+                )
+            }
+
+        backingField?.let {
+            val descriptor = it.descriptor
+            when (descriptor) {
+                is WrappedFieldDescriptor ->
+                    descriptor.bind(it)
+                is WrappedPropertyDescriptor ->
+                    // A property symbol and its field symbol share the same descriptor.
+                    // Unfortunately symbol deserialization doesn't know anything about that.
+                    // So we can end up with two wrapped property descriptors for property and its field.
+                    // In that case we need to bind the field's one here.
+                    if (symbol.descriptor != descriptor) descriptor.bind(property)
+            }
+
+        }
         getter?.let { (it.descriptor as? WrappedSimpleFunctionDescriptor)?.bind(it) }
         setter?.let { (it.descriptor as? WrappedSimpleFunctionDescriptor)?.bind(it) }
-
-        val descriptor =
-            if (proto.hasDescriptorReference())
-                deserializeDescriptorReference(proto.descriptorReference) as PropertyDescriptor
-            else
-                backingField?.descriptor as? WrappedPropertyDescriptor // If field's descriptor coincides with property's.
-                    ?: getterToPropertyDescriptorMap.getOrPut(getter!!.symbol) { WrappedPropertyDescriptor() }
-
-        val property = IrPropertyImpl(
-            start, end, origin,
-            descriptor,
-            deserializeName(proto.name),
-            deserializeVisibility(proto.visibility),
-            deserializeModality(proto.modality),
-            proto.isVar,
-            proto.isConst,
-            proto.isLateinit,
-            proto.isDelegated,
-            proto.isExternal
-        )
-
-        symbolTable.referenceProperty(descriptor, { property })
 
         property.backingField = backingField
         property.getter = getter
         property.setter = setter
 
-        backingField?.let { it.correspondingProperty = property }
-        getter?.let { it.correspondingProperty = property }
-        setter?.let { it.correspondingProperty = property }
+        backingField?.let { it.correspondingPropertySymbol = symbol }
+        getter?.let { it.correspondingPropertySymbol = symbol }
+        setter?.let { it.correspondingPropertySymbol = symbol }
 
         return property
     }

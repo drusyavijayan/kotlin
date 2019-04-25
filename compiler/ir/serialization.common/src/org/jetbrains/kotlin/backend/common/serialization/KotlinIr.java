@@ -359,6 +359,10 @@ public final class KotlinIr {
      * </pre>
      */
     RECEIVER_PARAMETER_SYMBOL(11, 12),
+    /**
+     * <code>PROPERTY_SYMBOL = 13;</code>
+     */
+    PROPERTY_SYMBOL(12, 13),
     ;
 
     /**
@@ -417,6 +421,10 @@ public final class KotlinIr {
      * </pre>
      */
     public static final int RECEIVER_PARAMETER_SYMBOL_VALUE = 12;
+    /**
+     * <code>PROPERTY_SYMBOL = 13;</code>
+     */
+    public static final int PROPERTY_SYMBOL_VALUE = 13;
 
 
     public final int getNumber() { return value; }
@@ -435,6 +443,7 @@ public final class KotlinIr {
         case 10: return ANONYMOUS_INIT_SYMBOL;
         case 11: return STANDALONE_FIELD_SYMBOL;
         case 12: return RECEIVER_PARAMETER_SYMBOL;
+        case 13: return PROPERTY_SYMBOL;
         default: return null;
       }
     }
@@ -20437,21 +20446,13 @@ public final class KotlinIr {
     org.jetbrains.kotlin.backend.common.serialization.KotlinIr.MemberAccessCommon getMemberAccess();
 
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
      */
-    boolean hasDescriptorReference();
+    boolean hasSymbol();
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
      */
-    org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference getDescriptorReference();
+    org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol getSymbol();
   }
   /**
    * Protobuf type {@code org.jetbrains.kotlin.backend.common.serialization.IrPropertyReference}
@@ -20569,14 +20570,14 @@ public final class KotlinIr {
               break;
             }
             case 50: {
-              org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.Builder subBuilder = null;
+              org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.Builder subBuilder = null;
               if (((bitField0_ & 0x00000020) == 0x00000020)) {
-                subBuilder = descriptorReference_.toBuilder();
+                subBuilder = symbol_.toBuilder();
               }
-              descriptorReference_ = input.readMessage(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.PARSER, extensionRegistry);
+              symbol_ = input.readMessage(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(descriptorReference_);
-                descriptorReference_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(symbol_);
+                symbol_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000020;
               break;
@@ -20690,27 +20691,19 @@ public final class KotlinIr {
       return memberAccess_;
     }
 
-    public static final int DESCRIPTOR_REFERENCE_FIELD_NUMBER = 6;
-    private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference descriptorReference_;
+    public static final int SYMBOL_FIELD_NUMBER = 6;
+    private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol symbol_;
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
      */
-    public boolean hasDescriptorReference() {
+    public boolean hasSymbol() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
      */
-    public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference getDescriptorReference() {
-      return descriptorReference_;
+    public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol getSymbol() {
+      return symbol_;
     }
 
     private void initFields() {
@@ -20719,7 +20712,7 @@ public final class KotlinIr {
       setter_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
       origin_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrStatementOrigin.getDefaultInstance();
       memberAccess_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.MemberAccessCommon.getDefaultInstance();
-      descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+      symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -20728,6 +20721,10 @@ public final class KotlinIr {
       if (isInitialized == 0) return false;
 
       if (!hasMemberAccess()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSymbol()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -20759,11 +20756,9 @@ public final class KotlinIr {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (hasDescriptorReference()) {
-        if (!getDescriptorReference().isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
+      if (!getSymbol().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
       memoizedIsInitialized = 1;
       return true;
@@ -20788,7 +20783,7 @@ public final class KotlinIr {
         output.writeMessage(5, memberAccess_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeMessage(6, descriptorReference_);
+        output.writeMessage(6, symbol_);
       }
       output.writeRawBytes(unknownFields);
     }
@@ -20821,7 +20816,7 @@ public final class KotlinIr {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += org.jetbrains.kotlin.protobuf.CodedOutputStream
-          .computeMessageSize(6, descriptorReference_);
+          .computeMessageSize(6, symbol_);
       }
       size += unknownFields.size();
       memoizedSerializedSize = size;
@@ -20927,7 +20922,7 @@ public final class KotlinIr {
         bitField0_ = (bitField0_ & ~0x00000008);
         memberAccess_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.MemberAccessCommon.getDefaultInstance();
         bitField0_ = (bitField0_ & ~0x00000010);
-        descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+        symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
         bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
@@ -20975,7 +20970,7 @@ public final class KotlinIr {
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.descriptorReference_ = descriptorReference_;
+        result.symbol_ = symbol_;
         result.bitField0_ = to_bitField0_;
         return result;
       }
@@ -20997,8 +20992,8 @@ public final class KotlinIr {
         if (other.hasMemberAccess()) {
           mergeMemberAccess(other.getMemberAccess());
         }
-        if (other.hasDescriptorReference()) {
-          mergeDescriptorReference(other.getDescriptorReference());
+        if (other.hasSymbol()) {
+          mergeSymbol(other.getSymbol());
         }
         setUnknownFields(
             getUnknownFields().concat(other.unknownFields));
@@ -21007,6 +21002,10 @@ public final class KotlinIr {
 
       public final boolean isInitialized() {
         if (!hasMemberAccess()) {
+          
+          return false;
+        }
+        if (!hasSymbol()) {
           
           return false;
         }
@@ -21038,11 +21037,9 @@ public final class KotlinIr {
           
           return false;
         }
-        if (hasDescriptorReference()) {
-          if (!getDescriptorReference().isInitialized()) {
-            
-            return false;
-          }
+        if (!getSymbol().isInitialized()) {
+          
+          return false;
         }
         return true;
       }
@@ -21366,85 +21363,61 @@ public final class KotlinIr {
         return this;
       }
 
-      private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+      private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
        */
-      public boolean hasDescriptorReference() {
+      public boolean hasSymbol() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
        */
-      public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference getDescriptorReference() {
-        return descriptorReference_;
+      public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol getSymbol() {
+        return symbol_;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
        */
-      public Builder setDescriptorReference(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference value) {
+      public Builder setSymbol(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        descriptorReference_ = value;
+        symbol_ = value;
 
         bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
        */
-      public Builder setDescriptorReference(
-          org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.Builder builderForValue) {
-        descriptorReference_ = builderForValue.build();
+      public Builder setSymbol(
+          org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.Builder builderForValue) {
+        symbol_ = builderForValue.build();
 
         bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
        */
-      public Builder mergeDescriptorReference(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference value) {
+      public Builder mergeSymbol(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol value) {
         if (((bitField0_ & 0x00000020) == 0x00000020) &&
-            descriptorReference_ != org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance()) {
-          descriptorReference_ =
-            org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.newBuilder(descriptorReference_).mergeFrom(value).buildPartial();
+            symbol_ != org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance()) {
+          symbol_ =
+            org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.newBuilder(symbol_).mergeFrom(value).buildPartial();
         } else {
-          descriptorReference_ = value;
+          symbol_ = value;
         }
 
         bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 6;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 6;</code>
        */
-      public Builder clearDescriptorReference() {
-        descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+      public Builder clearSymbol() {
+        symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
 
         bitField0_ = (bitField0_ & ~0x00000020);
         return this;
@@ -49801,21 +49774,13 @@ public final class KotlinIr {
       org.jetbrains.kotlin.protobuf.MessageLiteOrBuilder {
 
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
      */
-    boolean hasDescriptorReference();
+    boolean hasSymbol();
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
      */
-    org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference getDescriptorReference();
+    org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol getSymbol();
 
     /**
      * <code>required .org.jetbrains.kotlin.backend.common.serialization.String name = 2;</code>
@@ -49967,14 +49932,14 @@ public final class KotlinIr {
               break;
             }
             case 10: {
-              org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.Builder subBuilder = null;
+              org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.Builder subBuilder = null;
               if (((bitField0_ & 0x00000001) == 0x00000001)) {
-                subBuilder = descriptorReference_.toBuilder();
+                subBuilder = symbol_.toBuilder();
               }
-              descriptorReference_ = input.readMessage(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.PARSER, extensionRegistry);
+              symbol_ = input.readMessage(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(descriptorReference_);
-                descriptorReference_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(symbol_);
+                symbol_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000001;
               break;
@@ -50115,27 +50080,19 @@ public final class KotlinIr {
     }
 
     private int bitField0_;
-    public static final int DESCRIPTOR_REFERENCE_FIELD_NUMBER = 1;
-    private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference descriptorReference_;
+    public static final int SYMBOL_FIELD_NUMBER = 1;
+    private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol symbol_;
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
      */
-    public boolean hasDescriptorReference() {
+    public boolean hasSymbol() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-     *
-     * <pre>
-     * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-     * </pre>
+     * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
      */
-    public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference getDescriptorReference() {
-      return descriptorReference_;
+    public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol getSymbol() {
+      return symbol_;
     }
 
     public static final int NAME_FIELD_NUMBER = 2;
@@ -50304,7 +50261,7 @@ public final class KotlinIr {
     }
 
     private void initFields() {
-      descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+      symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
       name_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.String.getDefaultInstance();
       visibility_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.Visibility.getDefaultInstance();
       modality_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.ModalityKind.FINAL_MODALITY;
@@ -50323,6 +50280,10 @@ public final class KotlinIr {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      if (!hasSymbol()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasName()) {
         memoizedIsInitialized = 0;
         return false;
@@ -50355,11 +50316,9 @@ public final class KotlinIr {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (hasDescriptorReference()) {
-        if (!getDescriptorReference().isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
+      if (!getSymbol().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
       if (!getName().isInitialized()) {
         memoizedIsInitialized = 0;
@@ -50395,7 +50354,7 @@ public final class KotlinIr {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, descriptorReference_);
+        output.writeMessage(1, symbol_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeMessage(2, name_);
@@ -50441,7 +50400,7 @@ public final class KotlinIr {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += org.jetbrains.kotlin.protobuf.CodedOutputStream
-          .computeMessageSize(1, descriptorReference_);
+          .computeMessageSize(1, symbol_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += org.jetbrains.kotlin.protobuf.CodedOutputStream
@@ -50581,7 +50540,7 @@ public final class KotlinIr {
 
       public Builder clear() {
         super.clear();
-        descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+        symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
         bitField0_ = (bitField0_ & ~0x00000001);
         name_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.String.getDefaultInstance();
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -50631,7 +50590,7 @@ public final class KotlinIr {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.descriptorReference_ = descriptorReference_;
+        result.symbol_ = symbol_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
@@ -50682,8 +50641,8 @@ public final class KotlinIr {
 
       public Builder mergeFrom(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrProperty other) {
         if (other == org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrProperty.getDefaultInstance()) return this;
-        if (other.hasDescriptorReference()) {
-          mergeDescriptorReference(other.getDescriptorReference());
+        if (other.hasSymbol()) {
+          mergeSymbol(other.getSymbol());
         }
         if (other.hasName()) {
           mergeName(other.getName());
@@ -50724,6 +50683,10 @@ public final class KotlinIr {
       }
 
       public final boolean isInitialized() {
+        if (!hasSymbol()) {
+          
+          return false;
+        }
         if (!hasName()) {
           
           return false;
@@ -50756,11 +50719,9 @@ public final class KotlinIr {
           
           return false;
         }
-        if (hasDescriptorReference()) {
-          if (!getDescriptorReference().isInitialized()) {
-            
-            return false;
-          }
+        if (!getSymbol().isInitialized()) {
+          
+          return false;
         }
         if (!getName().isInitialized()) {
           
@@ -50810,85 +50771,61 @@ public final class KotlinIr {
       }
       private int bitField0_;
 
-      private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+      private org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
        */
-      public boolean hasDescriptorReference() {
+      public boolean hasSymbol() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
        */
-      public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference getDescriptorReference() {
-        return descriptorReference_;
+      public org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol getSymbol() {
+        return symbol_;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
        */
-      public Builder setDescriptorReference(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference value) {
+      public Builder setSymbol(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        descriptorReference_ = value;
+        symbol_ = value;
 
         bitField0_ |= 0x00000001;
         return this;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
        */
-      public Builder setDescriptorReference(
-          org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.Builder builderForValue) {
-        descriptorReference_ = builderForValue.build();
+      public Builder setSymbol(
+          org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.Builder builderForValue) {
+        symbol_ = builderForValue.build();
 
         bitField0_ |= 0x00000001;
         return this;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
        */
-      public Builder mergeDescriptorReference(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference value) {
+      public Builder mergeSymbol(org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol value) {
         if (((bitField0_ & 0x00000001) == 0x00000001) &&
-            descriptorReference_ != org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance()) {
-          descriptorReference_ =
-            org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.newBuilder(descriptorReference_).mergeFrom(value).buildPartial();
+            symbol_ != org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance()) {
+          symbol_ =
+            org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.newBuilder(symbol_).mergeFrom(value).buildPartial();
         } else {
-          descriptorReference_ = value;
+          symbol_ = value;
         }
 
         bitField0_ |= 0x00000001;
         return this;
       }
       /**
-       * <code>optional .org.jetbrains.kotlin.backend.common.serialization.DescriptorReference descriptor_reference = 1;</code>
-       *
-       * <pre>
-       * IrProperty doesn't have a symbol at all. Preserve this rudiment for now.
-       * </pre>
+       * <code>required .org.jetbrains.kotlin.backend.common.serialization.IrSymbol symbol = 1;</code>
        */
-      public Builder clearDescriptorReference() {
-        descriptorReference_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.DescriptorReference.getDefaultInstance();
+      public Builder clearSymbol() {
+        symbol_ = org.jetbrains.kotlin.backend.common.serialization.KotlinIr.IrSymbol.getDefaultInstance();
 
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
