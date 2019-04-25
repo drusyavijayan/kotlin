@@ -166,10 +166,15 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
                 if (symbol is ConeCallableSymbol) {
                     jump.tryCalculateReturnType(symbol.firUnsafe())
                 } else if (symbol is ConeClassifierSymbol) {
-                    FirResolvedTypeRefImpl(
-                        session, null, symbol.constructType(emptyArray(), isNullable = false),
-                        isMarkedNullable = false, annotations = emptyList()
-                    )
+                    val firUnsafe = symbol.firUnsafe()
+                    // TODO: unhack
+                    if (firUnsafe is FirEnumEntry) {
+                        firUnsafe.superTypeRefs.first() as FirResolvedTypeRef
+                    } else
+                        FirResolvedTypeRefImpl(
+                            session, null, symbol.constructType(emptyArray(), isNullable = false),
+                            isMarkedNullable = false, annotations = emptyList()
+                        )
                 } else {
                     error("WTF ! $symbol")
                 }
