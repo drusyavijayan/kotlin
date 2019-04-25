@@ -76,14 +76,15 @@ class JavaClassUseSiteScope(
         }
         val substitution = ConeSubstitutorByMap(overriddenInJava.typeParameters.map { it.symbol }.zip(types).toMap())
         if (!overriddenInJava.typeParameters.zip(base.typeParameters).all { (a, b) ->
-                a.bounds.size == b.bounds.size &&
-                        a.bounds.zip(b.bounds).all { (aBound, bBound) -> isEqualTypes(aBound, bBound, substitution) }
+                a.bounds.size == b.bounds.size && a.bounds.zip(b.bounds).all { (aBound, bBound) ->
+                    isEqualTypes(aBound, bBound, substitution)
+                }
             }
         ) return false
 
 
-        return overriddenInJava.valueParameters.zip(base.valueParameters).all { (memberParam, selfParam) ->
-            isEqualTypes(memberParam.returnTypeRef, selfParam.returnTypeRef, substitution)
+        return overriddenInJava.valueParameters.zip(baseParameterTypes).all { (paramFromJava, baseType) ->
+            isEqualTypes(paramFromJava.returnTypeRef, baseType, substitution)
         }
     }
 
