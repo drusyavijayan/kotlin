@@ -1,4 +1,3 @@
-// IGNORE
 
 class A {
     fun bar() = foo()

@@ -1,5 +1,4 @@
 // !CHECK_TYPE
-// IGNORE_FIR
 
 // KT-1410 Compiler does automatically infer type argument when using variance
 //+JDK

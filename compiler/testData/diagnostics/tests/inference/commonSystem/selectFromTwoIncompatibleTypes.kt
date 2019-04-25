@@ -1,6 +1,5 @@
 // !LANGUAGE: +NewInference
 // !DIAGNOSTICS: -UNUSED_PARAMETER
-// IGNORE_FIR
 
 class Inv<T>
 

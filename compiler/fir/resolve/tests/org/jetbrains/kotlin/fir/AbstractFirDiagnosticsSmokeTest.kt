@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.fir
 
 import com.intellij.openapi.extensions.Extensions
-import com.intellij.openapi.fileEditor.impl.LoadTextUtil
 import com.intellij.psi.PsiElementFinder
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.analyzer.ModuleInfo
@@ -26,26 +25,18 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.MultiTargetPlatform
 import org.jetbrains.kotlin.resolve.TargetPlatform
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
-import org.jetbrains.kotlin.test.InTextDirectivesUtils
 import java.io.File
 import java.util.*
 
-const val IGNORE_FIR_DIRECTIVE = "IGNORE_FIR"
-
 abstract class AbstractFirDiagnosticsSmokeTest : BaseDiagnosticsTest() {
     override fun analyzeAndCheck(testDataFile: File, files: List<TestFile>) {
-        val ignoreFailure = InTextDirectivesUtils.isDirectiveDefined(testDataFile.readText(), IGNORE_FIR_DIRECTIVE)
         try {
             analyzeAndCheckUnhandled(files)
-            assert(!ignoreFailure) { "Test marked as ignored, but passing" }
+        } catch (t: AssertionError) {
+            throw t
         } catch (t: Throwable) {
-            if (!ignoreFailure) {
-                throw t
-            } else {
-                t.printStackTrace()
-            }
+            throw t
         }
-
     }
 
 

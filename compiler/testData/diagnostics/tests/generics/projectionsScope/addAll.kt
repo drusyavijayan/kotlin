@@ -1,6 +1,5 @@
 // !WITH_NEW_INFERENCE
 // !DIAGNOSTICS: -UNUSED_PARAMETER
-// IGNORE_FIR
 
 interface C<out T>
 interface MC<T> : C<T> {

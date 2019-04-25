@@ -1,6 +1,5 @@
 // !LANGUAGE: +NewInference
 // !DIAGNOSTICS: -UNUSED_PARAMETER
-// IGNORE_FIR
 
 interface Base<out T>
 

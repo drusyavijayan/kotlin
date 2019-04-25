@@ -1,5 +1,3 @@
-// IGNORE_FIR
-
 fun <S : Any> foo(x: Array<out S?>, y: Array<in S?>) {
     val xo = outA(x)
     val yo = inA(y)

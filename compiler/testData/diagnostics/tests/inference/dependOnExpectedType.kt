@@ -1,5 +1,4 @@
 // !CHECK_TYPE
-// IGNORE_FIR
 
 package h
 //+JDK

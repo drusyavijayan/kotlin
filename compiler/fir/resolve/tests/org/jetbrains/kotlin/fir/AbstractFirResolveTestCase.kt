@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.fir.resolve.impl.FirProviderImpl
 import org.jetbrains.kotlin.fir.resolve.transformers.FirTotalResolveTransformer
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.test.ConfigurationKind
-import org.jetbrains.kotlin.test.InTextDirectivesUtils
 import org.jetbrains.kotlin.test.KotlinTestUtils
 import java.io.File
 
@@ -47,21 +46,8 @@ abstract class AbstractFirResolveTestCase : AbstractFirResolveWithSessionTestCas
         }
     }
 
-    fun doTest(path: String) {
-        val ignoreFailure = InTextDirectivesUtils.isDirectiveDefined(File(path).readText(), "IGNORE")
-        try {
-            doTestUnhandled(path)
-            assert(!ignoreFailure) { "Test marked as ignored, but passing" }
-        } catch (t: Throwable) {
-            if (!ignoreFailure) {
-                throw t
-            } else {
-                t.printStackTrace()
-            }
-        }
-    }
 
-    private fun doTestUnhandled(path: String) {
+    fun doTest(path: String) {
         val file = File(path)
 
         val allFiles = listOf(file) + file.parentFile.listFiles { sibling ->
