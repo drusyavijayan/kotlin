@@ -166,6 +166,8 @@ class MemberScopeTowerLevel(
                     // NB: we do not check dispatchReceiverValue != null here,
                     // because of objects & constructors (see comments in dispatchReceiverValue() implementation)
                     output.consumeCandidate(candidate, candidate.dispatchReceiverValue())
+                } else if (candidate is ConeClassLikeSymbol) {
+                    output.consumeCandidate(candidate, null)
                 } else {
                     ProcessorAction.NEXT
                 }
@@ -228,6 +230,7 @@ class ScopeTowerLevel(
                 }
             }
             TowerScopeLevel.Token.Functions -> scope.processFunctionsByName(name) { candidate ->
+                // TODO: fix implicit receiver
                 if (candidate.hasConsistentExtensionReceiver(explicitReceiver) && candidate.dispatchReceiverValue() == null) {
                     processor.consumeCandidate(candidate as T, dispatchReceiverValue = null)
                 } else {
