@@ -68,6 +68,10 @@ class FirSyntheticPropertiesScope(val session: FirSession, val baseScope: FirSco
         if (baseScope.processFunctionsByName(Name.guessByFirstCharacter("get${name.identifier.capitalize()}")) {
                 checkGetAndCreateSynthetic(name, it, processor)
             }.stop()) return ProcessorAction.STOP
+
+        if (name.asString().startsWith("is") && baseScope.processFunctionsByName(name) {
+                checkGetAndCreateSynthetic(name, it, processor)
+            }.stop()) return ProcessorAction.STOP
         return super.processPropertiesByName(name, processor)
     }
 }
