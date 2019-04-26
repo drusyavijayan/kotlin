@@ -201,7 +201,7 @@ abstract class IrModuleDeserializer(
     private fun deserializeBlock(proto: KotlinIr.IrBlock, start: Int, end: Int, type: IrType): IrBlock {
         val statements = mutableListOf<IrStatement>()
         val statementProtos = proto.statementList
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         statementProtos.forEach {
             statements.add(deserializeStatement(it) as IrStatement)
@@ -250,7 +250,7 @@ abstract class IrModuleDeserializer(
             deserializeIrSymbol(proto.`super`) as IrClassSymbol
         } else null
 
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         val call: IrCall = when (proto.kind) {
             KotlinIr.IrCall.Primitive.NOT_PRIMITIVE ->
@@ -276,7 +276,7 @@ abstract class IrModuleDeserializer(
     private fun deserializeComposite(proto: KotlinIr.IrComposite, start: Int, end: Int, type: IrType): IrComposite {
         val statements = mutableListOf<IrStatement>()
         val statementProtos = proto.statementList
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         statementProtos.forEach {
             statements.add(deserializeStatement(it) as IrStatement)
@@ -331,7 +331,7 @@ abstract class IrModuleDeserializer(
     ): IrFunctionReference {
 
         val symbol = deserializeIrSymbol(proto.symbol) as IrFunctionSymbol
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
         val callable = IrFunctionReferenceImpl(
             start,
             end,
@@ -355,7 +355,7 @@ abstract class IrModuleDeserializer(
     private fun deserializeGetField(proto: KotlinIr.IrGetField, start: Int, end: Int, type: IrType): IrGetField {
         val access = proto.fieldAccess
         val symbol = deserializeIrSymbol(access.symbol) as IrFieldSymbol
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         val superQualifier = if (access.hasSuper()) {
             deserializeIrSymbol(access.symbol) as IrClassSymbol
@@ -369,7 +369,7 @@ abstract class IrModuleDeserializer(
 
     private fun deserializeGetValue(proto: KotlinIr.IrGetValue, start: Int, end: Int, type: IrType): IrGetValue {
         val symbol = deserializeIrSymbol(proto.symbol) as IrValueSymbol
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
         // TODO: origin!
         return IrGetValueImpl(start, end, type, symbol, origin)
     }
@@ -414,7 +414,7 @@ abstract class IrModuleDeserializer(
         val getter = deserializeIrSymbol(proto.getter) as IrSimpleFunctionSymbol
         val setter = if (proto.hasSetter()) deserializeIrSymbol(proto.setter) as IrSimpleFunctionSymbol else null
         val symbol = deserializeIrSymbol(proto.symbol) as IrLocalDelegatedPropertySymbol
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         return IrLocalDelegatedPropertyReferenceImpl(
             start, end, type,
@@ -436,7 +436,7 @@ abstract class IrModuleDeserializer(
         val field = if (proto.hasField()) deserializeIrSymbol(proto.field) as IrFieldSymbol else null
         val getter = if (proto.hasGetter()) deserializeIrSymbol(proto.getter) as IrSimpleFunctionSymbol else null
         val setter = if (proto.hasSetter()) deserializeIrSymbol(proto.setter) as IrSimpleFunctionSymbol else null
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         val descriptor =
         if (proto.hasDescriptorReference())
@@ -474,7 +474,7 @@ abstract class IrModuleDeserializer(
             deserializeExpression(access.receiver)
         } else null
         val value = deserializeExpression(proto.value)
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         return IrSetFieldImpl(start, end, symbol, receiver, value, builtIns.unitType, origin, superQualifier)
     }
@@ -482,7 +482,7 @@ abstract class IrModuleDeserializer(
     private fun deserializeSetVariable(proto: KotlinIr.IrSetVariable, start: Int, end: Int): IrSetVariable {
         val symbol = deserializeIrSymbol(proto.symbol) as IrVariableSymbol
         val value = deserializeExpression(proto.value)
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
         return IrSetVariableImpl(start, end, builtIns.unitType, symbol, value, origin)
     }
 
@@ -575,7 +575,7 @@ abstract class IrModuleDeserializer(
 
     private fun deserializeWhen(proto: KotlinIr.IrWhen, start: Int, end: Int, type: IrType): IrWhen {
         val branches = mutableListOf<IrBranch>()
-        val origin = deserializeIrStatementOrigin(proto.origin)
+        val origin = if (proto.hasOrigin()) deserializeIrStatementOrigin(proto.origin) else null
 
         proto.branchList.forEach {
             branches.add(deserializeStatement(it) as IrBranch)
@@ -601,13 +601,13 @@ abstract class IrModuleDeserializer(
     // IrBreak statements have something to put into 'loop' field.
     private fun deserializeDoWhile(proto: KotlinIr.IrDoWhile, start: Int, end: Int, type: IrType) =
         deserializeLoop(proto.loop, deserializeLoopHeader(proto.loop.loopId) {
-            val origin = deserializeIrStatementOrigin(proto.loop.origin)
+            val origin = if (proto.loop.hasOrigin()) deserializeIrStatementOrigin(proto.loop.origin) else null
             IrDoWhileLoopImpl(start, end, type, origin)
         })
 
     private fun deserializeWhile(proto: KotlinIr.IrWhile, start: Int, end: Int, type: IrType) =
         deserializeLoop(proto.loop, deserializeLoopHeader(proto.loop.loopId) {
-            val origin = deserializeIrStatementOrigin(proto.loop.origin)
+            val origin = if (proto.loop.hasOrigin()) deserializeIrStatementOrigin(proto.loop.origin) else null
             IrWhileLoopImpl(start, end, type, origin)
         })
 
@@ -1227,11 +1227,10 @@ abstract class IrModuleDeserializer(
     val statementOriginIndex =
         allKnownStatementOrigins.map { it.objectInstance as? IrStatementOriginImpl }.filterNotNull().associateBy { it.debugName }
 
-    fun deserializeIrStatementOrigin(proto: KotlinIr.IrStatementOrigin): IrStatementOrigin? {
+    fun deserializeIrStatementOrigin(proto: KotlinIr.IrStatementOrigin): IrStatementOrigin {
         return deserializeString(proto.name).let {
             val componentPrefix = "COMPONENT_"
             when {
-                it == "" -> null
                 it.startsWith(componentPrefix) -> {
                     IrStatementOrigin.COMPONENT_N.withIndex(it.removePrefix(componentPrefix).toInt())
                 }
